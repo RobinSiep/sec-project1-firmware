@@ -8,6 +8,7 @@ This project is being built using [ESP-open-SDK](). Below is some documentation 
 ## Useful links
 
 - [ESP-open-SDK toolchain](https://github.com/pfalcon/esp-open-sdk)
+- [ESP8266 wiki](https://github.com/esp8266/esp8266-wiki/wiki/Toolchain)
 
 ## ESP-open-SDK 
 ESP-open-SDK contains the complete toolchain.
