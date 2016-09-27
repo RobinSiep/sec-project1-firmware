@@ -30,6 +30,12 @@ $ make
 $ export PATH=/opt/esp-open-sdk/xtensa-lx106-elf/bin:$PATH 
 ```
 
+This will give you the following structure:
+- Compiler : `/opt/esp-open-sdk/xtensa-lx106-elf/bin`
+- SDK base dir: `/opt/esp-open-sdk/sdk`
+
+Depending on the makefile a project may search for different directories. Edit makefile accordingly.
+
 
 ## NodeMCU documentation
 *Applies if we decide to use Lua*
