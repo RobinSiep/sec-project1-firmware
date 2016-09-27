@@ -1,6 +1,10 @@
 # sec-project1
 This project is being built using [NodeMCU firmware](https://github.com/nodemcu/nodemcu-firmware). Below are a few useful link mostly for our own use for quick access and documentation.
 
+## Useful links
+
+- [ESP-open-SDK toolchain](https://github.com/pfalcon/esp-open-sdk)
+
 
 ## NodeMCU documentation
 *Copied from the [NodeMCU Github repository documentation]
