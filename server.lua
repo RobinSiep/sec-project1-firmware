@@ -1,3 +1,5 @@
+package.loaded.led = nil
+led = require "led"
 local server = {}
 
 server.createHTTPServer = function()
@@ -8,8 +10,11 @@ server.createHTTPServer = function()
     srv = net.createServer(net.TCP)
     srv:listen(80, function(conn)
         conn:on("receive", function(sck, payload)
-            print(payload)
-            sck:send("HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<h1> Hello, NodeMCU.</h1>")
+            if string.find(payload, "toggle") ~= nil then
+                print("toggled")
+                led.toggle()
+            end
+            sck:send("OK")
         end)
         conn:on("sent", function(sck) sck:close() end)
     end)
@@ -19,6 +24,7 @@ server.setupWifi = function()
     -- connect to WiFi access point
     wifi.setmode(wifi.STATION)
     wifi.sta.config("Crazy Diamond", "oldsmobilef85")
+    print(wifi.sta.getip())
 end
 
 return server
