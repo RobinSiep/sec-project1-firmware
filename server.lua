@@ -1,5 +1,7 @@
 package.loaded.led = nil
+package.loaded.config = nil
 led = require "led"
+config = require "config"
 local server = {}
 
 server.createHTTPServer = function()
@@ -33,13 +35,13 @@ server.sendGet = function()
         -- Wait for connection before sending.
         sck:send("GET / HTTP/1.1\r\nHost: 192.168.0.36\r\nConnection: keep-alive\r\nAccept: */*\r\n\r\n")
     end)
-    sk:connect(6543,"192.168.2.244")
+    sk:connect(config.port, config.host)
 end
 
 server.setupWifi = function()
     -- connect to WiFi access point
     wifi.setmode(wifi.STATION)
-    wifi.sta.config("SSID", "password")
+    wifi.sta.config(config.SSID, config.password)
     print(wifi.sta.getip())
 end
 
