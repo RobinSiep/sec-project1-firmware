@@ -1,15 +1,11 @@
 package.loaded.server = nil
 package.loaded.led = nil
+package.loaded.wsclient = nil
 server = require "server"
 led = require "led"
+wsclient = require "wsclient"
 led.init()
 server.setupWifi()
+wsclient.setup()
 
-pollForCommands = function()
-    tmr.alarm(0, 5000, 1, function()
-        server.sendGet()
-    end)
-end
-
-pollForCommands()
 

@@ -25,8 +25,7 @@ end
 server.sendGet = function()
     sk = net.createConnection(net.TCP, 0)
     sk:on("receive", function(sck, payload)
-        data = cjson.decode(payload)
-        print(data["do"])
+        print(payload)
     end)
 
     sk:on("connection", function(sck,c)
@@ -34,6 +33,12 @@ server.sendGet = function()
         sck:send("GET / HTTP/1.1\r\nHost: 192.168.0.36\r\nConnection: keep-alive\r\nAccept: */*\r\n\r\n")
     end)
     sk:connect(config.port, config.host)
+end
+
+server.pollForCommands = function()
+    tmr.alarm(0, 5000, 1, function()
+        server.sendGet()
+    end)
 end
 
 server.setupWifi = function()
