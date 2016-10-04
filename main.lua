@@ -4,5 +4,12 @@ server = require "server"
 led = require "led"
 led.init()
 server.setupWifi()
-server.sendGet()
+
+pollForCommands = function()
+    tmr.alarm(0, 5000, 1, function()
+        server.sendGet()
+    end)
+end
+
+pollForCommands()
 
