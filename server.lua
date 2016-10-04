@@ -39,7 +39,7 @@ end
 server.setupWifi = function()
     -- connect to WiFi access point
     wifi.setmode(wifi.STATION)
-    wifi.sta.config("Crazy Diamond", "oldsmobilef85")
+    wifi.sta.config("SSID", "password")
     print(wifi.sta.getip())
 end
 
