@@ -25,10 +25,8 @@ end
 server.sendGet = function()
     sk = net.createConnection(net.TCP, 0)
     sk:on("receive", function(sck, payload)
-        if string.find(payload, "toggle") ~= nil then
-            print("toggled")
-            led.toggle()
-        end
+        data = cjson.decode(payload)
+        print(data["do"])
     end)
 
     sk:on("connection", function(sck,c)
