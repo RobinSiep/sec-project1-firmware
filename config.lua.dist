@@ -1,0 +1,9 @@
+local config = {}
+
+config.SSID =
+config.password =
+
+config.host =
+config.port =
+
+return config
