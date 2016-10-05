@@ -5,7 +5,6 @@ connect = function(ws)
 end
 
 registerCallbacks = function(ws)
-    print("callback")
     ws:on("connection", function(ws)
         print("connected")
     end)
