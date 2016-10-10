@@ -11,4 +11,6 @@ config.crypt.pub =
 config.crypt.private =
 config.crypt.iv =
 
+config.gpio =
+
 return config
