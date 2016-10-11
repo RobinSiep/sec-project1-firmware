@@ -1,14 +1,16 @@
 local config = {}
 
-config.SSID =
-config.password =
+config.SSID = "librator"
+config.wpapwd = ""
 
-config.host =
-config.port =
+config.host = ""
+config.port = ""
 
 config.crypt = {}
-config.crypt.pub = 
-config.crypt.private =
-config.crypt.iv =
+config.crypt.sec = ""
+config.crypt.iv = ""
+
+config.gpio = 4
+config.secretID = ""
 
 return config
