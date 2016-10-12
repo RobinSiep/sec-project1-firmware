@@ -9,8 +9,9 @@ update = require "update"
 local wsclient = {}
 
 updatePayload = nil
+updating = false
 
-tmr.register(0, 1000, tmr.ALARM_SEMI, function() wsclient.setup() end)
+tmr.register(0, 10000, tmr.ALARM_SEMI, function() wsclient.setup() end)
 tmr.register(1, 900000, tmr.ALARM_SEMI, function() pollForUpdate() end)
 
 connect = function(ws)
@@ -29,10 +30,28 @@ identify = function(ws)
     end
 end
 
-parsePayload = function(payload)
+parsePayload = function(payload, ws)
     -- Parses the received payload
     if payload == nil then
         print("payload is nil")
+        return
+    end
+
+    if payload:sub(1, 4) == "FILE" then
+        print("update retrieved")
+        handleUpdate(payload, ws)
+        return
+    end
+
+    if payload == "UPDATE FINISH" then
+        if updating == true then
+            update.finish()
+            updating = false
+        else
+            -- This means the chipset most likely hard reset and disconnected because the chipset
+            -- doesn't indicate it was updating
+            update.restore()
+        end
         return
     end
 
@@ -56,11 +75,27 @@ parsePayload = function(payload)
     end
 end
 
+handleUpdate = function(payload, ws)
+    updating = true
+    result = update.updateFile(payload)
+    updateResult = {
+        ["result"] = result
+    }
+    ok, json = pcall(cjson.encode, updateResult)
+    if ok then
+        ws:send(json)
+    else
+        print("Failed parsing update result")
+    end
+end
+    
+
 parseUpdateInfo = function(nodeMCUVersion, firmwareVersion)
     updateInfo = {
         ["nodeMCUVersion"] = nodeMCUVersion,
         ["firmwareVersion"] = firmwareVersion
     }
+    print("parsing update info")
     ok, json = pcall(cjson.encode, updateInfo)
     if ok then
         updatePayload = json
@@ -85,7 +120,7 @@ registerCallbacks = function(ws)
     end)
     ws:on("receive", function(_, msg, opcode)
         print("payload received", opcode)
-        parsePayload(msg)
+        parsePayload(msg, ws)
     end)
     ws:on("close", function(_, status)
         print("disconnected", status)
