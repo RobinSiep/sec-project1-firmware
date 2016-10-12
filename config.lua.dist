@@ -7,7 +7,7 @@ config.version = "0.0.1"
 config.SSID = ""
 config.wpapwd = ""
 
-config.host = ""
+config.host = "wss://"
 config.port =
 
 config.gpio = 4
