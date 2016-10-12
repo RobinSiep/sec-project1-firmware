@@ -1,0 +1,14 @@
+local config = {}
+
+config.SSID =
+config.password =
+
+config.host =
+config.port =
+
+config.crypt = {}
+config.crypt.pub = 
+config.crypt.private =
+config.crypt.iv =
+
+return config
