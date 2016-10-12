@@ -1,14 +1,16 @@
+return config
+
 local config = {}
 
-config.SSID =
-config.password =
+config.version = "0.0.1"
 
-config.host =
+config.SSID = ""
+config.wpapwd = ""
+
+config.host = ""
 config.port =
 
-config.crypt = {}
-config.crypt.pub = 
-config.crypt.private =
-config.crypt.iv =
+config.gpio = 4
+config.secretID = ""
 
 return config
