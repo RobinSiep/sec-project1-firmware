@@ -4,30 +4,34 @@ config = require "config"
 
 local setup = {}
 
-cfg = {}
+function run_setup()
+    wifi.setmode(wifi.SOFTAP)
+    cfg={}
+    cfg.ssid=config.SSID
+    cfg.auth=AUTH_WPA2_PSK
+    cfg.pwd=config.wpapwd
+    wifi.ap.config(cfg)
 
-cfg.pwd=config.wpapwd
-cfg.auth=AUTH_WPA2_PSK
-cfg.ssid=config.SSID
-cfg.channel=6
-cfg.hidden=0
-cfg.max=2
-cfg.beacon=100
+    print("Opening WiFi credentials portal")
+    dofile ("dns-liar.lua")
+    dofile ("dnsserver.lua")
+end
+
+function try_connecting()
+    wifi.setmode(wifi.STATION)
+    print(wifi.sta.getip())
+    if wifi.sta.getip() == nil then
+        return false
+    end
+    print(wifi.sta.getip())
+    return true
+
+end
 
 setup.wifi = function()
-    wifi.setmode(wifi.STATIONAP)
-    wifi.setphymode(wifi.PHYMODE_N)
-    wifi.ap.config(cfg)
-    enduser_setup.manual(true)
-    enduser_setup.start(
-            function()
-                print("Connected", wifi.sta.getip())
-                enduser_setup.stop()
-            end,
-            function(err, str)
-                print(err, str)
-            end
-    )
+    if not try_connecting() then
+        run_setup()
+    end
 end
 
 return setup
