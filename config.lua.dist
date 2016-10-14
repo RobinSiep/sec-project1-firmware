@@ -1,3 +1,5 @@
+return config
+
 local config = {}
 
 config.SSID = "librator"
@@ -6,9 +8,7 @@ config.wpapwd = ""
 config.host = ""
 config.port = ""
 
-config.crypt = {}
-config.crypt.sec = ""
-config.crypt.iv = ""
+config.version = "0.0.1"
 
 config.gpio = 4
 config.secretID = ""
