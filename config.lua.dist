@@ -2,13 +2,13 @@ return config
 
 local config = {}
 
-config.version = "0.0.1"
-
-config.SSID = ""
+config.SSID = "librator"
 config.wpapwd = ""
 
 config.host = ""
-config.port =
+config.port = ""
+
+config.version = "0.0.1"
 
 config.gpio = 4
 config.secretID = ""
