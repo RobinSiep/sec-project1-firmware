@@ -1,5 +1,6 @@
 --[[
-Modified by Andy Reischle
+Based on code 
+modiefied by Andy Reischle
 
 Based on 
 XChip's NodeMCU IDE
