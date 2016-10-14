@@ -6,5 +6,6 @@ wsclient = require "wsclient"
 setup = require "setup"
 led.init()
 setup.wifi()
+wsclient.setup()
 
 
