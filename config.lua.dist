@@ -5,8 +5,8 @@ local config = {}
 config.SSID = "librator"
 config.wpapwd = ""
 
-config.host = ""
-config.port = ""
+config.host = "wss://"
+config.port =
 
 config.version = "0.0.1"
 

@@ -34,8 +34,6 @@ led.init = function()
     gpio.write(pin, gpio.HIGH)
 end
 
-led.init()
-
 led.on = function()
     tmr.start(2)
 end

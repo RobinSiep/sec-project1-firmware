@@ -1,23 +1,57 @@
 package.loaded.config = nil
 package.loaded.led = nil
+package.loaded.update =nil
 
 config = require "config"
 led = require "led"
+update = require "update"
 
 local wsclient = {}
 
-tmr.register(0, 1000, tmr.ALARM_SEMI, function() wsclient.setup() end)
+updatePayload = nil
+updating = false
+
+tmr.register(0, 10000, tmr.ALARM_SEMI, function() wsclient.setup() end)
+tmr.register(1, 900000, tmr.ALARM_SEMI, function() pollForUpdate() end)
 
 connect = function(ws)
     ws:connect(config.host)
 end
 
 identify = function(ws)
-    ws:send(config.secretID)
+    payload = {
+        ["identifier"] = config.secretID
+    }
+    ok, json = pcall(cjson.encode, payload)
+    if ok then
+        ws:send(json)
+    else
+        print("Failed to encode payload")
+    end
 end
 
-parsePayload = function(payload)
+parsePayload = function(payload, ws)
+    -- Parses the received payload
     if payload == nil then
+        print("payload is nil")
+        return
+    end
+
+    if payload:sub(1, 4) == "FILE" then
+        print("update retrieved")
+        handleUpdate(payload, ws)
+        return
+    end
+
+    if payload == "UPDATE FINISH" then
+        if updating == true then
+            update.finish()
+            updating = false
+        else
+            -- This means the chipset most likely hard reset and disconnected because the chipset
+            -- doesn't indicate it was updating
+            update.restore()
+        end
         return
     end
 
@@ -28,6 +62,8 @@ parsePayload = function(payload)
         return
     end
 
+    print("parsed payload")
+
     if type(data["pattern"]) == "table" then
         led.pattern = data["pattern"]
     end
@@ -37,23 +73,65 @@ parsePayload = function(payload)
     elseif data["on"] == false then
         led.off()
     end
-        
+end
+
+handleUpdate = function(payload, ws)
+    updating = true
+    result = update.updateFile(payload)
+    updateResult = {
+        ["result"] = result
+    }
+    ok, json = pcall(cjson.encode, updateResult)
+    if ok then
+        ws:send(json)
+    else
+        print("Failed parsing update result")
+    end
+end
+    
+
+parseUpdateInfo = function(nodeMCUVersion, firmwareVersion)
+    updateInfo = {
+        ["nodeMCUVersion"] = nodeMCUVersion,
+        ["firmwareVersion"] = firmwareVersion
+    }
+    print("parsing update info")
+    ok, json = pcall(cjson.encode, updateInfo)
+    if ok then
+        updatePayload = json
+    else
+        print("Failed to encode update info!")
+    end
 end
 
 registerCallbacks = function(ws)
     ws:on("connection", function(ws)
         print("connected")
+        -- Get update info ready for polling
+        nodeMCUVersion, firmwareVersion = update.getVersionInfo()
+        parseUpdateInfo(nodeMCUVersion, firmwareVersion)
+
+        -- identify to the server
         identify(ws)
+
+        -- start polling for update
+        pollForUpdate(ws)
+        tmr.start(1)
     end)
     ws:on("receive", function(_, msg, opcode)
         print("payload received", opcode)
-        parsePayload(msg)
+        parsePayload(msg, ws)
     end)
     ws:on("close", function(_, status)
         print("disconnected", status)
-        -- atempt reconnect
+        -- attempt reconnect
         tmr.start(0)
     end)
+end
+
+pollForUpdate = function(ws)
+    print("polling for update")
+    ws:send(updatePayload)
 end
 
 wsclient.setup = function()
@@ -61,5 +139,7 @@ wsclient.setup = function()
     registerCallbacks(ws)
     connect(ws)
 end
+
+wsclient.setup()
 
 return wsclient
