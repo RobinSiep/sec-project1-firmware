@@ -124,8 +124,8 @@ registerCallbacks = function(ws)
         identify(ws)
 
         -- start polling for update
-        --pollForUpdate(ws)
-        --tmr.start(1)
+        pollForUpdate(ws)
+        tmr.start(1)
     end)
     ws:on("receive", function(_, msg, opcode)
         print("payload received", opcode)
