@@ -40,6 +40,7 @@ end
 
 led.off = function()
     tmr.stop(2)
+    gpio.write(pin, gpio.HIGH)
 end
 
 return led
