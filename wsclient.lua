@@ -9,9 +9,10 @@ update = require "update"
 local wsclient = {}
 
 updatePayload = nil
-updating = false
 
-tmr.register(0, 10000, tmr.ALARM_SEMI, function() wsclient.setup() end)
+stored_ws = nil
+
+tmr.register(0, 10000, tmr.ALARM_SEMI, function() connect(stored_ws) end)
 tmr.register(1, 900000, tmr.ALARM_SEMI, function() pollForUpdate() end)
 
 connect = function(ws)
@@ -55,6 +56,13 @@ parsePayload = function(payload, ws)
         return
     end
 
+    payload = payload:lower()
+    payload = payload:gsub("%'", "")
+    payload = payload:gsub("%'", "")
+    payload = payload:gsub("on", '"on"')
+    payload = payload:gsub("pattern", '"pattern"')
+    print(payload)
+
     ok, data = pcall(cjson.decode, payload)
 
     if not ok then
@@ -92,8 +100,9 @@ end
 
 parseUpdateInfo = function(nodeMCUVersion, firmwareVersion)
     updateInfo = {
+        ["identifier"] = config.secretID,
         ["nodeMCUVersion"] = nodeMCUVersion,
-        ["firmwareVersion"] = firmwareVersion
+        ["firmware_version"] = firmwareVersion
     }
     print("parsing update info")
     ok, json = pcall(cjson.encode, updateInfo)
@@ -108,7 +117,7 @@ registerCallbacks = function(ws)
     ws:on("connection", function(ws)
         print("connected")
         -- Get update info ready for polling
-        nodeMCUVersion, firmwareVersion = update.getVersionInfo()
+        nodeMCUVersion, firmware_version = update.getVersionInfo()
         parseUpdateInfo(nodeMCUVersion, firmwareVersion)
 
         -- identify to the server
@@ -136,10 +145,9 @@ end
 
 wsclient.setup = function()
     ws = websocket.createClient()
+    stored_ws = ws
     registerCallbacks(ws)
     connect(ws)
 end
-
-wsclient.setup()
 
 return wsclient

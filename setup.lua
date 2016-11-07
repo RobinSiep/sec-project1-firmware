@@ -2,6 +2,8 @@ package.loaded.config = nil
 
 config = require "config"
 
+tmr.register(4, 5000, tmr.ALARM_SINGLE, function() try_connecting() end)
+
 local setup = {}
 
 function run_setup()
@@ -21,17 +23,13 @@ function try_connecting()
     wifi.setmode(wifi.STATION)
     print(wifi.sta.getip())
     if wifi.sta.getip() == nil then
-        return false
+        run_setup()
+        return
     end
-    print(wifi.sta.getip())
-    return true
-
 end
 
 setup.wifi = function()
-    if not try_connecting() then
-        run_setup()
-    end
+    tmr.start(4)
 end
 
 return setup
